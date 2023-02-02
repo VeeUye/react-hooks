@@ -5,18 +5,15 @@ import * as React from 'react'
 import {useEffect, useState} from 'react'
 
 function Greeting({initialName = ''}) {
-  console.log('rendering')
   const getInitialName = () => {
-    console.log('getting initial value')
    return window.localStorage.getItem('name') && initialName
   }
-
 
   const [name, setName] = useState(getInitialName)
 
   useEffect(() => {
     window.localStorage.setItem('name', name)
-  })
+  }, [name])
 
   function handleChange(event) {
     setName(event.target.value)
