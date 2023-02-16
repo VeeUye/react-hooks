@@ -2,13 +2,14 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react'
-import {useLocalStorageState} from '../utils'
+import {useEffect, useState} from 'react'
 
 function Board() {
 
     const initialBoardState = Array(9).fill(null)
-    const key = 'tic-tac-toe'
-    const [squares, setSquares] = useLocalStorageState(key, initialBoardState)
+    const [squares, setSquares] = useState(() => JSON.parse(window.localStorage.getItem('squares')) || initialBoardState)
+
+    useEffect(() => {window.localStorage.setItem('squares', JSON.stringify(squares))}, [squares])
 
     const nextValue = calculateNextValue(squares)
     const winner = calculateWinner(squares)
