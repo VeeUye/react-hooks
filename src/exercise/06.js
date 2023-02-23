@@ -13,7 +13,7 @@ function Alert({error}) {
     )
 }
 function PokemonInfo({pokemonName}) {
-
+const [status, setStatus] = useState('idle')
     const [pokemon, setPokemon] = useState(null)
     const [error, setError] = useState(null)
 
@@ -21,25 +21,39 @@ function PokemonInfo({pokemonName}) {
             if (!pokemonName) {
                 return
             }
-            setPokemon(null)
-            setError(null)
+            setStatus('pending')
         fetchPokemon(pokemonName)
-            .then(pokemonData => setPokemon(pokemonData))
-            .catch(error => setError(error))
+            .then(pokemonData => {
+                setPokemon(pokemonData)
+                setStatus('resolved')
+            })
+            .catch(error => {
+                setError(error)
+                setStatus('rejected')
+            })
 
     }, [pokemonName])
+
+    if (status === 'idle') {
+        return 'Submit a pokemon'
+    }
+    if (status === 'pending') {
+        return <PokemonInfoFallback name = {pokemonName} />
+    }
+    if (status === 'rejected') {
+        return <Alert error={error}/>
+    }
+
+    if (status === 'resolved') {
+        return <PokemonDataView pokemon={pokemon}/>
+    }
 
     if(error) {
         return <Alert error={error}/>
     }
 
-    if (!pokemonName) {
-        return 'Submit a pokemon'
-    }
-    if (pokemonName && !pokemon) {
-        return <PokemonInfoFallback name = {pokemonName} />
-    }
-        return <PokemonDataView pokemon={pokemon}/>
+    throw new Error('This should be impossible')
+
 }
 
 function App() {
