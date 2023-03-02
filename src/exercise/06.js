@@ -5,7 +5,24 @@ import * as React from 'react'
 import {PokemonForm, fetchPokemon, PokemonInfoFallback, PokemonDataView} from '../pokemon'
 import {useEffect, useState} from 'react'
 
-function Alert({error}) {
+class ErrorBoundary extends React.Component {
+    state = {error: null};
+
+    static getDerivedStateFromError(error) {
+        return { error };
+    }
+
+    render() {
+        const {error} = this.state
+        if (error) {
+            return <this.props.Fallback error={error}/>;
+        }
+
+        return this.props.children;
+    }
+}
+
+function ErrorFallback({error}) {
     return (
         <div role="alert">
             There was an error: <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
@@ -45,7 +62,7 @@ function PokemonInfo({pokemonName}) {
         return <PokemonInfoFallback name = {pokemonName} />
     }
     if (status === 'rejected') {
-        return <Alert error={error}/>
+        throw error
     }
 
     if (status === 'resolved') {
@@ -53,7 +70,7 @@ function PokemonInfo({pokemonName}) {
     }
 
     if(error) {
-        return <Alert error={error}/>
+        throw error
     }
 
     throw new Error('This should be impossible')
@@ -72,7 +89,9 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <PokemonInfo pokemonName={pokemonName} />
+          <ErrorBoundary Fallback={ErrorFallback}>
+              <PokemonInfo pokemonName={pokemonName} />
+            </ErrorBoundary>
       </div>
     </div>
   )
