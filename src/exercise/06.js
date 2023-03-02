@@ -21,8 +21,6 @@ function PokemonInfo({pokemonName}) {
 
     const {status, pokemon, error} = state
 
-    console.log(state)
-
     useEffect(() => {
             if (!pokemonName) {
                 return
@@ -30,12 +28,13 @@ function PokemonInfo({pokemonName}) {
             setState({...state, status: 'pending'})
 
         fetchPokemon(pokemonName)
-            .then(pokemonData => {
-                setState({...state, status: 'resolved', pokemon: pokemonData})
+            .then(pokemon => {
+                setState({...state, status: 'resolved', pokemon: pokemon})
             })
             .catch(error => {
                 setState({...state, status: 'rejected',  error: error})
             })
+        // eslint-disable-next-line
 
     }, [pokemonName])
 
