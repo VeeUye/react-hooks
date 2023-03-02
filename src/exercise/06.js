@@ -13,23 +13,28 @@ function Alert({error}) {
     )
 }
 function PokemonInfo({pokemonName}) {
-const [status, setStatus] = useState('idle')
-    const [pokemon, setPokemon] = useState(null)
-    const [error, setError] = useState(null)
+    const [state, setState] = useState({
+        status: 'idle',
+        pokemon: null,
+        error: null,
+    })
+
+    const {status, pokemon, error} = state
+
+    console.log(state)
 
     useEffect(() => {
             if (!pokemonName) {
                 return
             }
-            setStatus('pending')
+            setState({...state, status: 'pending'})
+
         fetchPokemon(pokemonName)
             .then(pokemonData => {
-                setPokemon(pokemonData)
-                setStatus('resolved')
+                setState({...state, status: 'resolved', pokemon: pokemonData})
             })
             .catch(error => {
-                setError(error)
-                setStatus('rejected')
+                setState({...state, status: 'rejected',  error: error})
             })
 
     }, [pokemonName])
